@@ -1,10 +1,10 @@
 #!/bin/sh
 
-WP_DB_NAME=theaudb
-WP_DB_USER=theau
-WP_DB_PASS=inception
-DB_ROOT_PASS=root
+MARIADB_DATABASE=theaudb
+MARIADB_USERNAME=theau
+MARIADB_PASSWORD=inception
 
+set -e #makes the script exit immediately if any command fails
 echo "[DB CONFIG] Configuring MariaDB..."
 
 if [ ! -d "/run/mysqld" ]; then
@@ -19,29 +19,22 @@ then
 else
 	echo "[DB CONFIG] Installing MySQL Data Directory..."
 	chown -R mysql:mysql /var/lib/mysql
-	mariadb-install-db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm > /dev/null
+	mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
 	echo "[DB CONFIG] MySQL Data Directory done."
 
 	echo "[DB CONFIG] Configuring MySQL..."
 	TMP=/tmp/.tmpfile
 
-	echo "USE mysql;" > ${TMP}
-	echo "FLUSH PRIVILEGES;" >> ${TMP}
-	echo "DELETE FROM mysql.user WHERE User='';" >> ${TMP}
-	echo "DROP DATABASE IF EXISTS test;" >> ${TMP}
-	echo "DELETE FROM mysql.db WHERE Db='test';" >> ${TMP}
-	echo "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');" >> ${TMP}
-	echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';" >> ${TMP}
-	echo "CREATE DATABASE ${WP_DB_NAME};" >> ${TMP}
-	echo "CREATE USER '${WP_DB_USER}'@'%' IDENTIFIED BY '${WP_DB_PASS}';" >> ${TMP}
-	echo "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'%' IDENTIFIED BY '${WP_DB_PASS}';" >> ${TMP}
+	echo "CREATE DATABASE ${MARIADB_DATABASE};" >> ${TMP}
+	echo "CREATE USER '${MARIADB_USERNAME}'@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';" >> ${TMP}
+	echo "GRANT ALL PRIVILEGES ON ${MARIADB_DATABASE}.* TO '${MARIADB_USERNAME}'@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';" >> ${TMP}
 	echo "FLUSH PRIVILEGES;" >> ${TMP}
 
 	# Alpine does not come with service or rc-service,
 	# so we cannot use: service mysql start
 	# We might be able to install with: apk add openrc
 	# But we can also manually start and configure the mysql daemon:
-	mariadbd --user=mysql --bootstrap < ${TMP}
+	mysqld -u mysql --bootstrap < ${TMP}
 	rm -f ${TMP}
 	echo "[DB CONFIG] MySQL configuration done."
 fi
@@ -51,4 +44,4 @@ sed -i "s|skip-networking|# skip-networking|g" /etc/my.cnf.d/mariadb-server.cnf
 sed -i "s|.*bind-address\s*=.*|bind-address=0.0.0.0|g" /etc/my.cnf.d/mariadb-server.cnf
 
 echo "[DB CONFIG] Starting MariaDB daemon on port 3306."
-exec mariadbd --user=mysql --console
+exec mysqld -u mysql --console
