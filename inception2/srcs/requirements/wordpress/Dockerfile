@@ -8,6 +8,7 @@ RUN			apk add mariadb-client
 
 # Configure PHP-fpm to listen on internal inception network port 9000
 RUN			sed -i 's/listen = 127.0.0.1:9000/listen = 9000/g' /etc/php83/php-fpm.d/www.conf
+RUN			sed -i 's/^memory_limit = .*/memory_limit = 512M/' /etc/php83/php.ini
 
 RUN			apk add curl #tar
 RUN			curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp-cli.phar
