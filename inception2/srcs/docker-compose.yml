@@ -19,7 +19,7 @@ services:
               #- "3306"
         env_file: .env
         volumes:
-            - mariadb:/var/lib/mysql
+            - mariadb:${MARIADB_DATADIR}
         restart: always
     wordpress:
         container_name: wordpress

@@ -1,14 +1,14 @@
 #!/bin/sh
 
-MARIADB_DATABASE=theaudb
-MARIADB_USER=theau
-MARIADB_PASSWORD=inception
-ADMIN_USR=babozo
-ADMIN_PWD=bozo
-ADMIN_MAIL=babozo_mail
-USER_USR=theau
-USER_PWD=toto
-USER_MAIL=theau_mail
+#MARIADB_DATABASE=theaudb
+#MARIADB_USER=theau
+#MARIADB_PASSWORD=inception
+#ADMIN_USR=babozo
+#ADMIN_PWD=bozo
+#ADMIN_MAIL=babozo_mail
+#USER_USR=theau
+#USER_PWD=toto
+#USER_MAIL=theau_mail
 
 # Configure WordPress if it isn't already set
 if [ ! -f /var/www/html/wp-config.php ]; then
