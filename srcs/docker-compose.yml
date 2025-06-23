@@ -9,27 +9,35 @@ services:
         env_file: .env
         ports:
             - "443:443"
+        volumes:
+            - wordpress:/var/www/html
         restart: always
+
     mariadb:
         container_name: mariadb
         build: requirements/mariadb/
         networks:
             - inception
-              #expose:
-              #- "3306"
         env_file: .env
         volumes:
             - mariadb:${MARIADB_DATADIR}
         restart: always
+        healthcheck:
+            test: "mariadb-admin ping"
+            interval: 2s
+            timeout: 30s
+            retries: 3
+
     wordpress:
         container_name: wordpress
         build: requirements/wordpress/
         depends_on:
-            - mariadb
+            mariadb:
+                condition: service_healthy
         networks: 
             - inception
-              #ports:
-              #- "9000:9000"
+        expose:
+            - "9000"
         env_file: .env
         volumes:
             - wordpress:/var/www/html

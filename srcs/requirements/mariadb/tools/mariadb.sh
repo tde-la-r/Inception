@@ -8,10 +8,10 @@ if [ ! -d "/run/mysqld" ]; then
 	chown -R mysql:mysql /run/mysqld
 fi
 
-if [ -d "${MARIADB_DATADIR}" ]
-then
-	echo "[DB CONFIG] MariaDB already configured."
-else
+#if [ -d "${MARIADB_DATADIR}" ]
+#then
+	#echo "[DB CONFIG] MariaDB already configured."
+#else
 	echo "[DB CONFIG] Installing MySQL Data Directory..."
 	mkdir ${MARIADB_DATADIR} 
 	chown -R mysql:mysql ${MARIADB_DATADIR}
@@ -42,7 +42,7 @@ else
 	mariadbd --user=mysql --datadir=${MARIADB_DATADIR} --bootstrap < ${TMP}
 	rm -f ${TMP}
 	echo "[DB CONFIG] MySQL configuration done."
-fi
+#fi
 
 echo "[DB CONFIG] Allowing remote connections to MariaDB"
 sed -i "s|skip-networking|# skip-networking|g" /etc/my.cnf.d/mariadb-server.cnf
