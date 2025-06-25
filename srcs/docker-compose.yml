@@ -26,7 +26,7 @@ services:
             test: "mariadb-admin ping"
             interval: 2s
             timeout: 30s
-            retries: 3
+            retries: 5
 
     wordpress:
         container_name: wordpress
